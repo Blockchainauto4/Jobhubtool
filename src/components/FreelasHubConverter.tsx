@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { JobPosting } from '../types';
-import { generateFormattedPost, parseRawJobText, extractTikTokUrl } from '../utils/formatter';
+import { generateFormattedPost, parseRawJobText, extractTikTokUrl, formatPhoneNumber, generateDirectWhatsAppUrl } from '../utils/formatter';
 import { COMMON_TIKTOK_LINKS } from '../data/defaultTemplates';
 import { JobBannerModal } from './JobBannerModal';
 
@@ -82,6 +82,8 @@ export const FreelasHubConverter: React.FC<FreelasHubConverterProps> = ({
   const [justProcessedAlert, setJustProcessedAlert] = useState(false);
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedPreMsg, setCopiedPreMsg] = useState(false);
+  const [copiedTikTok, setCopiedTikTok] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const [outputViewMode, setOutputViewMode] = useState<'clean_card' | 'whatsapp_text'>('clean_card');
 
@@ -171,6 +173,7 @@ export const FreelasHubConverter: React.FC<FreelasHubConverterProps> = ({
         observation: d.observation || job.observation,
         rules: Array.isArray(d.rules) && d.rules.length > 0 ? d.rules : job.rules,
         contactPhone: d.contactPhone || job.contactPhone,
+        customWhatsAppMessage: d.customWhatsAppMessage || job.customWhatsAppMessage,
         tiktokLink: d.tiktokLink || job.tiktokLink
       });
 
@@ -279,6 +282,26 @@ export const FreelasHubConverter: React.FC<FreelasHubConverterProps> = ({
       await navigator.clipboard.writeText(trackingUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  const handleCopyPreMessage = async (msg: string) => {
+    try {
+      await navigator.clipboard.writeText(msg);
+      setCopiedPreMsg(true);
+      setTimeout(() => setCopiedPreMsg(false), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  const handleCopyTikTokLink = async (link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedTikTok(true);
+      setTimeout(() => setCopiedTikTok(false), 2000);
     } catch {
       // fallback
     }
@@ -880,7 +903,97 @@ Pagamento 3 dias úteis..."
                     </div>
                   )}
 
-                  {/* Link Rastreável Ativo */}
+                  {/* 1. Link do TikTok da Campanha */}
+                  {job.tiktokLink && (
+                    <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 shrink-0">
+                          <Gamepad2 className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Link TikTok da Campanha</div>
+                          <div className="text-xs font-mono text-pink-300 truncate max-w-[280px] sm:max-w-md">
+                            {job.tiktokLink}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <a
+                          href={job.tiktokLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 text-pink-300 text-xs font-semibold border border-pink-500/30 flex items-center gap-1 transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Abrir TikTok</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyTikTokLink(job.tiktokLink || '')}
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium flex items-center gap-1 cursor-pointer transition-colors"
+                        >
+                          {copiedTikTok ? <Check className="w-3.5 h-3.5 text-pink-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedTikTok ? 'Copiado!' : 'Copiar Link'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2. Número do Contratante com a Pré-mensagem logo abaixo */}
+                  <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/40 space-y-3 shadow-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Número do Contratante</div>
+                          <div className="text-sm font-black text-white font-mono">
+                            {formatPhoneNumber(job.contactPhone || '5511921254453')}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 self-start sm:self-auto">
+                        ✓ Contato Verificado
+                      </span>
+                    </div>
+
+                    {/* Pré-mensagem que o candidato enviará */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Pré-mensagem formalizada para WhatsApp:</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyPreMessage(job.customWhatsAppMessage || `Olá! Tenho interesse na vaga de ${job.role} no ${job.location}.`)}
+                          className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer font-medium"
+                        >
+                          {copiedPreMsg ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                          <span>{copiedPreMsg ? 'Copiada!' : 'Copiar mensagem'}</span>
+                        </button>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-950/90 border border-slate-800 text-xs text-emerald-200/90 italic font-mono leading-relaxed">
+                        "{job.customWhatsAppMessage || `Olá! Tenho interesse na vaga de ${job.role} no ${job.location} para ${job.dayOrDate || 'segunda'}.`}"
+                      </div>
+                    </div>
+
+                    {/* Botão de Ação Direta no WhatsApp com a pré-mensagem pronta */}
+                    <div className="pt-1 flex items-center justify-end">
+                      <a
+                        href={generateDirectWhatsAppUrl(job.contactPhone || '5511921254453', job.customWhatsAppMessage || `Olá! Tenho interesse na vaga de ${job.role} no ${job.location}.`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-emerald-900/40 transition-all cursor-pointer"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        <span>Chamar Contratante no WhatsApp com Pré-mensagem</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* 3. Link Rastreável Ativo */}
                   <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
@@ -913,6 +1026,17 @@ Pagamento 3 dias úteis..."
                         <span>{job.clicksCount || 0} cliques</span>
                       </button>
                     </div>
+                  </div>
+
+                  {/* 4. Breve Anúncio do Projeto */}
+                  <div className="pt-2 pb-1 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Formalizado via <strong className="text-white">Frila Hub</strong> — Plataforma de Oportunidades & Renda Coletiva</span>
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider hidden sm:inline">
+                      Mural Oficial
+                    </span>
                   </div>
                 </div>
               ) : (
@@ -1225,6 +1349,32 @@ Pagamento 3 dias úteis..."
                     onChange={(e) => onChange({ contactPhone: e.target.value })}
                     placeholder="Ex: 5511999998888"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Pré-mensagem de Contato (WhatsApp)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={job.customWhatsAppMessage || ''}
+                    onChange={(e) => onChange({ customWhatsAppMessage: e.target.value })}
+                    placeholder="Ex: Olá! Tenho interesse na vaga de carregador..."
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono text-[11px] resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Link TikTok da Campanha (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={job.tiktokLink || ''}
+                    onChange={(e) => onChange({ tiktokLink: e.target.value })}
+                    placeholder="https://www.tiktok.com/..."
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono text-[11px]"
                   />
                 </div>
 

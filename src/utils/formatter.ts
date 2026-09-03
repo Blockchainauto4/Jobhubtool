@@ -92,6 +92,10 @@ export function generateFormattedPost(
   // WhatsApp Link (direct wa.me or tracking link)
   const directWaUrl = generateDirectWhatsAppUrl(contactPhone, customMessage);
   const finalWaUrl = (includeLink && job.slug) ? trackingUrl : directWaUrl;
+  const formattedPhone = formatPhoneNumber(contactPhone);
+
+  // Breve anúncio padrão do projeto
+  const projectAd = '⚡ _Formalizado via Frila Hub — Plataforma de Oportunidades & Renda Coletiva._';
 
   // ========================================================
   // 1. CLEAN MODERN (LEITURA CLEAN, DIRETA E SEM POLUIÇÃO)
@@ -133,15 +137,25 @@ export function generateFormattedPost(
     }
 
     lines.push('');
-    lines.push(`📲 *Candidatar-se / Chamar no WhatsApp:*`);
+    // 1. Link do TikTok
     if (includeTiktok && tiktokLink) {
-      lines.push(`🎮 TikTok: ${tiktokLink}`);
+      lines.push(`🎮 *TikTok:* ${tiktokLink}`);
+    }
+
+    // 2. Número do contratante com a pré-mensagem logo abaixo do TikTok
+    if (contactPhone) {
+      lines.push(`📞 *Contato do Contratante:* ${formattedPhone}`);
+    }
+    if (customMessage) {
+      lines.push(`💬 *Pré-mensagem:* "${customMessage}"`);
     }
     if (finalWaUrl) {
-      lines.push(finalWaUrl);
-    } else if (includePhone && contactPhone) {
-      lines.push(formatPhoneNumber(contactPhone));
+      lines.push(`👉 *Chamar no WhatsApp:* ${finalWaUrl}`);
     }
+
+    // 3. Breve anúncio do projeto
+    lines.push('');
+    lines.push(projectAd);
 
     return lines.join('\n');
   }
@@ -188,21 +202,31 @@ export function generateFormattedPost(
     }
 
     lines.push('');
-    const linkParts: string[] = [];
+    // 1. Link do TikTok
     if (includeTiktok && tiktokLink) {
-      linkParts.push(tiktokLink);
-    }
-    if (finalWaUrl) {
-      linkParts.push(finalWaUrl);
+      lines.push(`🎮 TikTok: ${tiktokLink}`);
     }
 
-    lines.push(`📲 Chamar no WhatsApp: ${linkParts.join(' ')}`);
+    // 2. Número do contratante com a pré-mensagem logo abaixo do TikTok
+    if (contactPhone) {
+      lines.push(`📞 Contato do Contratante: ${formattedPhone}`);
+    }
+    if (customMessage) {
+      lines.push(`💬 Pré-mensagem: "${customMessage}"`);
+    }
+    if (finalWaUrl) {
+      lines.push(`📲 Chamar no WhatsApp: ${finalWaUrl}`);
+    }
+
+    // 3. Breve anúncio do projeto
+    lines.push('');
+    lines.push(projectAd);
 
     return lines.join('\n');
   }
 
   // ========================================================
-  // 2. EXACT PLAIN (PADRÃO TEXTO SIMPLES SEM EMOJIS)
+  // 3. EXACT PLAIN (PADRÃO TEXTO SIMPLES SEM EMOJIS)
   // ========================================================
   if (mode === 'exact_plain') {
     const lines: string[] = [];
@@ -225,31 +249,36 @@ export function generateFormattedPost(
     ];
     rawRules.forEach(rule => lines.push(rule.trim()));
     
-    if (requirements || contactPhone) {
-      const reqText = requirements || 'Disponível pra homem e mulher';
-      if (includePhone) {
-        lines.push(`${reqText} a número pra contato`);
-        lines.push(cleanPhoneNumber(contactPhone) || contactPhone);
-      } else {
-        lines.push(reqText);
-      }
+    if (requirements) {
+      lines.push(requirements);
     }
 
+    lines.push('');
+    // 1. TikTok
     if (includeTiktok && tiktokLink) {
-      lines.push(`Link TikTok Jogos: ${tiktokLink}`);
+      lines.push(`Link TikTok: ${tiktokLink}`);
     }
 
-    if (includeLink) {
-      lines.push('');
-      lines.push(`Link para confirmar vaga / candidatar-se:`);
-      lines.push(trackingUrl);
+    // 2. Número do contratante com a pré-mensagem
+    if (contactPhone) {
+      lines.push(`Número para contato / Contratante: ${formattedPhone}`);
     }
+    if (customMessage) {
+      lines.push(`Pré-mensagem: "${customMessage}"`);
+    }
+    if (finalWaUrl) {
+      lines.push(`Link direto para contato: ${finalWaUrl}`);
+    }
+
+    // 3. Anúncio do projeto
+    lines.push('');
+    lines.push(`Divulgado via Frila Hub - Plataforma de Oportunidades e Renda Coletiva`);
 
     return lines.join('\n');
   }
 
   // ========================================================
-  // 3. WHATSAPP STYLED (COM NEGRITO & MARCADORES)
+  // 4. WHATSAPP STYLED (COM NEGRITO & MARCADORES)
   // ========================================================
   if (mode === 'whatsapp_styled') {
     const lines: string[] = [];
@@ -272,25 +301,32 @@ export function generateFormattedPost(
     
     lines.push('');
     if (requirements) lines.push(`👥 *Perfil:* ${requirements}`);
-    if (includePhone && contactPhone) {
-      lines.push(`📲 *Contato:* ${formatPhoneNumber(contactPhone)}`);
-    }
 
+    // 1. Link do TikTok
     if (includeTiktok && tiktokLink) {
-      lines.push(`🎮 *TikTok Jogos:* ${tiktokLink}`);
+      lines.push(`🎮 *TikTok:* ${tiktokLink}`);
     }
 
-    if (includeLink) {
-      lines.push('');
-      lines.push(`👉 *Clique no link para garantir sua vaga:*`);
-      lines.push(trackingUrl);
+    // 2. Número do contratante com a pré-mensagem logo abaixo do TikTok
+    if (contactPhone) {
+      lines.push(`📞 *Contato do Contratante:* ${formattedPhone}`);
     }
+    if (customMessage) {
+      lines.push(`💬 *Pré-mensagem:* "${customMessage}"`);
+    }
+    if (finalWaUrl) {
+      lines.push(`👉 *Chamar no WhatsApp:* ${finalWaUrl}`);
+    }
+
+    // 3. Breve anúncio do projeto
+    lines.push('');
+    lines.push(projectAd);
 
     return lines.join('\n');
   }
 
   // ========================================================
-  // 4. MINIMAL
+  // 5. MINIMAL
   // ========================================================
   const lines: string[] = [];
   lines.push(`VAGA: ${role.toUpperCase()} - ${vacancies} (${dayOrDate})`);
@@ -300,8 +336,10 @@ export function generateFormattedPost(
   if (benefits) lines.push(`• Benefício: ${benefits}`);
   if (observation) lines.push(`• Obs: ${observation}`);
   if (includeTiktok && tiktokLink) lines.push(`• TikTok: ${tiktokLink}`);
-  if (includePhone && contactPhone) lines.push(`• Contato: ${contactPhone}`);
-  if (includeLink) lines.push(`• Link: ${trackingUrl}`);
+  if (contactPhone) lines.push(`• Contato Contratante: ${formattedPhone}`);
+  if (customMessage) lines.push(`• Pré-mensagem: "${customMessage}"`);
+  if (finalWaUrl) lines.push(`• WhatsApp: ${finalWaUrl}`);
+  lines.push(`• Frila Hub: Vaga formalizada para renda coletiva`);
 
   return lines.join('\n');
 }

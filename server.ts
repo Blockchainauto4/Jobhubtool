@@ -434,6 +434,7 @@ Diretrizes:
 - 'rules': Lista com regras, proibições de álcool/atrasos ou vestimentas exigidas (ex: Proibido chegar bêbado, calça preta).
 - 'observation': Resumo das regras e observações.
 - 'contactPhone': Apenas os números com DDD do WhatsApp se houver (ex: '11921254453').
+- 'customWhatsAppMessage': Mensagem amigável e direta que o candidato enviará no WhatsApp para o contratante (ex: 'Olá! Tenho interesse na vaga de Carregador no Sesc Casa Verde.').
 - 'tiktokLink': Manter vazio ou preencher se houver algum link específico.
 - 'headline': Chamada impactante para o banner visual da vaga (ex: '🚨 URGENTE: 70 VAGAS PARA CARREGADOR - R$ 120/DIA').
 - 'socialAdCopy': Mensagem adicional persuasiva e engajadora para grupos de WhatsApp.
@@ -467,6 +468,7 @@ Texto adicional do usuário: "${rawText || 'Nenhum texto adicional fornecido, an
             },
             observation: { type: Type.STRING },
             contactPhone: { type: Type.STRING },
+            customWhatsAppMessage: { type: Type.STRING },
             tiktokLink: { type: Type.STRING },
             headline: { type: Type.STRING },
             socialAdCopy: { type: Type.STRING }
