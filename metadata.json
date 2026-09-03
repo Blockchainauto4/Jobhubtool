@@ -1,0 +1,6 @@
+{
+  "name": "FreelasHub - Formatador de Vagas & Contador de Acessos",
+  "description": "Plataforma colaborativa Frila Hub para gerar renda com vagas de eventos e freelas, formatador para WhatsApp com IA Gemini, flyers em alta definição e links rastreáveis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "sesc-carregador-01",
+    "slug": "sesc-70",
+    "greeting": "Boa tarde",
+    "vacanciesCount": "70 vagas",
+    "dayOrDate": "pra segunda feira",
+    "location": "Sesc casa verde",
+    "role": "carregador",
+    "schedule": "8 as 20",
+    "paymentValue": "120 reais",
+    "paymentTerms": "Pagamento no término do evento 3 dias úteis pra frente",
+    "benefits": "Fornecemos a alimentação",
+    "rules": [
+      "Proibido chegar bêbado",
+      "Se vim bêbado ou beber no evento não vai receber"
+    ],
+    "requirements": "Disponível pra homem e mulher",
+    "contactPhone": "11921254453",
+    "customWhatsAppMessage": "Olá! Vi a vaga de Carregador no Sesc Casa Verde e gostaria de confirmar meu nome na lista.",
+    "includeTrackingLink": true,
+    "includePhoneDirectly": true,
+    "formatStyle": "exact_plain",
+    "clicksCount": 40,
+    "uniqueClicksCount": 31,
+    "clickLogs": [
+      {
+        "id": "log-1788398350943-0eh8",
+        "timestamp": "2026-09-03T01:19:10.943Z",
+        "userAgent": "curl/7.88.1",
+        "deviceType": "desktop",
+        "referer": "Link Direto"
+      },
+      {
+        "id": "log-1788398127767-opec",
+        "timestamp": "2026-09-03T01:15:27.767Z",
+        "userAgent": "curl/7.88.1",
+        "deviceType": "desktop",
+        "referer": "Link Direto"
+      },
+      {
+        "id": "log-1",
+        "timestamp": "2026-08-30T15:45:00.000Z",
+        "deviceType": "mobile",
+        "referer": "WhatsApp Android"
+      },
+      {
+        "id": "log-2",
+        "timestamp": "2026-08-30T15:20:00.000Z",
+        "deviceType": "mobile",
+        "referer": "WhatsApp iOS"
+      },
+      {
+        "id": "log-3",
+        "timestamp": "2026-08-30T14:10:00.000Z",
+        "deviceType": "desktop",
+        "referer": "WhatsApp Web"
+      }
+    ],
+    "createdAt": "2026-08-30T12:00:00.000Z",
+    "updatedAt": "2026-08-30T15:45:00.000Z",
+    "isActive": true,
+    "tiktokLink": "https://www.tiktok.com/d/1/ZS9Bv6akK8hFc-IaSbu/",
+    "includeTiktokLink": true
+  }
+]
