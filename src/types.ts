@@ -1,4 +1,4 @@
-export type FormatMode = 'tiktok_formal' | 'exact_plain' | 'whatsapp_styled' | 'minimal';
+export type FormatMode = 'clean_modern' | 'tiktok_formal' | 'exact_plain' | 'whatsapp_styled' | 'minimal';
 
 export interface JobPosting {
   id: string;

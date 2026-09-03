@@ -58,7 +58,7 @@ export function generateFormattedPost(
     overrideIncludePhone?: boolean;
   }
 ): string {
-  const mode = options?.mode || job.formatStyle || 'tiktok_formal';
+  const mode = options?.mode || job.formatStyle || 'clean_modern';
   const includeLink = options?.overrideIncludeLink ?? job.includeTrackingLink;
   const includePhone = options?.overrideIncludePhone ?? job.includePhoneDirectly;
   const trackingUrl = getFullTrackingUrl(job.slug, options?.baseUrl);
@@ -87,71 +87,107 @@ export function generateFormattedPost(
   const includeTiktok = job.includeTiktokLink !== false && tiktokLink.length > 0;
 
   // Observation / Rules
-  const observation = (job.observation || (Array.isArray(job.rules) && job.rules.length > 0 ? job.rules.join(' | ') : 'Proibido chegar bêbado ou consumir bebida alcoólica no evento (sujeito a perda do pagamento).')).trim();
+  const observation = (job.observation || (Array.isArray(job.rules) && job.rules.length > 0 ? job.rules.join(' • ') : 'Proibido consumo de bebidas alcoólicas no local do evento.')).trim();
 
   // WhatsApp Link (direct wa.me or tracking link)
   const directWaUrl = generateDirectWhatsAppUrl(contactPhone, customMessage);
   const finalWaUrl = (includeLink && job.slug) ? trackingUrl : directWaUrl;
 
   // ========================================================
-  // 1. TIKTOK FORMAL (NOVO MODELO OFICIAL PADRÃO)
+  // 1. CLEAN MODERN (LEITURA CLEAN, DIRETA E SEM POLUIÇÃO)
+  // ========================================================
+  if (mode === 'clean_modern') {
+    const lines: string[] = [];
+
+    // Header limpo com destaque
+    const headerTitle = dateShort ? `*🚨 VAGA: ${roleUpper} (${dateShort})*` : `*🚨 VAGA: ${roleUpper}*`;
+    lines.push(headerTitle);
+    lines.push('');
+
+    // Dados principais agrupados de forma fluida
+    const funcDetails = [vacancies, requirements].filter(Boolean).join(' • ');
+    lines.push(`💼 *Função:* ${role}${funcDetails ? ` (${funcDetails})` : ''}`);
+
+    if (dayOrDate || schedule) {
+      const whenParts = [dayOrDate, schedule].filter(Boolean).join(' • ');
+      lines.push(`📅 *Data & Horário:* ${whenParts}`);
+    }
+
+    if (paymentValue) {
+      const payDetails = [paymentTerms, benefits].filter(Boolean).join(' • ');
+      lines.push(`💰 *Cachê:* ${paymentValue}${payDetails ? ` (${payDetails})` : ''}`);
+    }
+
+    if (location || address) {
+      const locText = location && address ? `${location} – ${address}` : (location || address);
+      lines.push(`📍 *Local:* ${locText}`);
+    }
+
+    if (mapsUrl) {
+      lines.push(`🗺️ *Rota Maps:* ${mapsUrl}`);
+    }
+
+    if (observation) {
+      lines.push('');
+      lines.push(`⚠️ *Aviso:* ${observation}`);
+    }
+
+    lines.push('');
+    lines.push(`📲 *Candidatar-se / Chamar no WhatsApp:*`);
+    if (includeTiktok && tiktokLink) {
+      lines.push(`🎮 TikTok: ${tiktokLink}`);
+    }
+    if (finalWaUrl) {
+      lines.push(finalWaUrl);
+    } else if (includePhone && contactPhone) {
+      lines.push(formatPhoneNumber(contactPhone));
+    }
+
+    return lines.join('\n');
+  }
+
+  // ========================================================
+  // 2. TIKTOK FORMAL (MODELO ESTRUTURADO)
   // ========================================================
   if (mode === 'tiktok_formal') {
     const lines: string[] = [];
 
-    // Header: 🚨 VAGAS PARA CARREGADOR (31/08) 🚨
     const headerTitle = dateShort ? `🚨 VAGAS PARA ${roleUpper} (${dateShort}) 🚨` : `🚨 VAGAS PARA ${roleUpper} 🚨`;
     lines.push(headerTitle);
     lines.push('');
 
-    // Função: 💼 Função: Carregador (70 vagas | Homens e Mulheres)
     const funcDetails = [vacancies, requirements].filter(Boolean).join(' | ');
     lines.push(`💼 Função: ${role}${funcDetails ? ` (${funcDetails})` : ''}`);
-    lines.push('');
 
-    // Data: 📅 Data: Segunda-feira (31/08) das 08:00 às 20:00
     if (dayOrDate) {
-      if (schedule) {
-        lines.push(`📅 Data: ${dayOrDate} das ${schedule}`);
-      } else {
-        lines.push(`📅 Data: ${dayOrDate}`);
-      }
+      lines.push(schedule ? `📅 Data: ${dayOrDate} das ${schedule}` : `📅 Data: ${dayOrDate}`);
     } else if (schedule) {
       lines.push(`⏰ Horário: ${schedule}`);
     }
 
-    // Cachê: 💰 Cachê: R$ 120,00 (Alimentação fornecida no local)
     if (paymentValue) {
       lines.push(`💰 Cachê: ${paymentValue}${benefits ? ` (${benefits})` : ''}`);
     }
-    lines.push('');
 
-    // Pagamento: 💳 Pagamento: 3 dias úteis após o término do evento
     if (paymentTerms) {
       lines.push(`💳 Pagamento: ${paymentTerms}`);
-      lines.push('');
     }
 
-    // Local: 📍 Local: Sesc Casa Verde – Av. Casa Verde, 327 - Jardim São Bento, São Paulo - SP
     if (location || address) {
       const fullLoc = location && address ? `${location} – ${address}` : (location || address);
       lines.push(`📍 Local: ${fullLoc}`);
-      lines.push('');
     }
 
-    // Maps: 🗺️ Traçar rota no Maps: https://www.google.com/maps/...
     if (mapsUrl) {
       lines.push(`🗺️ Traçar rota no Maps: ${mapsUrl}`);
-      lines.push('');
     }
 
-    // Observação: ⚠️ Observação: Proibido chegar bêbado ou consumir bebida alcoólica no evento (sujeito a perda do pagamento).
     if (observation) {
-      lines.push(`⚠️ Observação: ${observation}`);
       lines.push('');
+      lines.push(`⚠️ Observação: ${observation}`);
     }
 
-    // Chamar no WhatsApp: 📲 Chamar no WhatsApp: https://www.tiktok.com/... https://wa.me/...
+    lines.push('');
     const linkParts: string[] = [];
     if (includeTiktok && tiktokLink) {
       linkParts.push(tiktokLink);

@@ -81,6 +81,16 @@ function loadJobs(): JobPosting[] {
         jobsStore = parsed;
         return jobsStore;
       }
+    } else {
+      const tmpFile = path.join('/tmp', 'freelashub-data', 'jobs.json');
+      if (fs.existsSync(tmpFile)) {
+        const data = fs.readFileSync(tmpFile, 'utf-8');
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          jobsStore = parsed;
+          return jobsStore;
+        }
+      }
     }
   } catch (err) {
     console.warn('Could not read jobs file, using in-memory store:', err);
@@ -95,7 +105,16 @@ function saveJobs(): void {
     }
     fs.writeFileSync(JOBS_FILE, JSON.stringify(jobsStore, null, 2), 'utf-8');
   } catch (err) {
-    console.warn('Could not write jobs file:', err);
+    // Vercel serverless environment fallback (writable /tmp)
+    try {
+      const tmpDir = path.join('/tmp', 'freelashub-data');
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(tmpDir, 'jobs.json'), JSON.stringify(jobsStore, null, 2), 'utf-8');
+    } catch (tmpErr) {
+      console.warn('Could not write jobs file in storage:', tmpErr);
+    }
   }
 }
 
@@ -723,6 +742,11 @@ app.get('/r/:slug', (req: Request, res: Response) => {
 
 // Setup Vite for development / static for production
 async function startServer() {
+  if (process.env.VERCEL) {
+    // In Vercel serverless functions, the platform handles the HTTP wrapper around app
+    return;
+  }
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -742,7 +766,9 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
 
 export default app;
 export { app };

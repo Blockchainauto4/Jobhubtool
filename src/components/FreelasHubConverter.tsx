@@ -24,7 +24,13 @@ import {
   Loader2,
   AlertCircle,
   Wand2,
-  Users
+  Users,
+  Calendar,
+  Eye,
+  FileText,
+  Navigation,
+  MessageCircle,
+  CheckCircle2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { JobPosting } from '../types';
@@ -77,6 +83,7 @@ export const FreelasHubConverter: React.FC<FreelasHubConverterProps> = ({
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
+  const [outputViewMode, setOutputViewMode] = useState<'clean_card' | 'whatsapp_text'>('clean_card');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -650,17 +657,17 @@ Pagamento 3 dias úteis..."
         {/* CAMPO 2: FORMATAÇÃO PARA O FREELASHUB (SAÍDA) */}
         <div className="bg-slate-900/90 rounded-2xl border border-emerald-500/30 p-5 flex flex-col shadow-xl shadow-emerald-950/20">
           
-          <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-800">
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black flex items-center justify-center border border-emerald-500/40">
                   2
                 </span>
                 <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                  Formatação para o FreelasHub
+                  Visualização da Vaga
                   {isProcessed ? (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                      Formatado
+                      Organizada
                     </span>
                   ) : (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-normal">
@@ -670,44 +677,256 @@ Pagamento 3 dias úteis..."
                 </h3>
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Mensagem estruturada no padrão oficial com TikTok, Maps e rota.
+                Leitura clean, direta e pronta para divulgação rápida no WhatsApp.
               </p>
             </div>
 
-            {isProcessed && (
-              <div className="flex items-center gap-1.5">
+            {/* View Switcher & Action buttons */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowBannerModal(true)}
-                  className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-medium rounded-lg border border-emerald-500/40 flex items-center gap-1 transition-colors cursor-pointer"
-                  title="Gerar Flyer / Imagem da Vaga"
+                  onClick={() => setOutputViewMode('clean_card')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    outputViewMode === 'clean_card'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
                 >
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  <span>Gerar Imagem</span>
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Leitura Clean</span>
                 </button>
-
                 <button
                   type="button"
-                  onClick={handleOpenWhatsApp}
-                  className="px-2.5 py-1 bg-green-600/20 hover:bg-green-600/30 text-green-300 text-xs font-medium rounded-lg border border-green-500/40 flex items-center gap-1 transition-colors cursor-pointer"
-                  title="Abrir no WhatsApp Web"
+                  onClick={() => setOutputViewMode('whatsapp_text')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    outputViewMode === 'whatsapp_text'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
                 >
-                  <Share2 className="w-3.5 h-3.5" />
-                  WhatsApp
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Texto WhatsApp</span>
                 </button>
               </div>
-            )}
+
+              {isProcessed && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowBannerModal(true)}
+                    className="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-500/40 flex items-center gap-1 transition-colors cursor-pointer"
+                    title="Gerar Flyer / Imagem da Vaga"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Flyer HD</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenWhatsApp}
+                    className="px-2.5 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-300 text-xs font-semibold rounded-lg border border-green-500/40 flex items-center gap-1 transition-colors cursor-pointer"
+                    title="Abrir no WhatsApp Web"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex-1 relative min-h-[300px]">
+          {/* Sub-header Format pills when in WhatsApp Text mode */}
+          {outputViewMode === 'whatsapp_text' && isProcessed && (
+            <div className="mb-3 flex items-center justify-between gap-2 overflow-x-auto pb-1 text-xs">
+              <span className="text-[11px] text-slate-400 font-medium whitespace-nowrap">Estilo do Texto:</span>
+              <div className="flex items-center gap-1">
+                {[
+                  { id: 'clean_modern', label: '✨ Clean (Recomendado)' },
+                  { id: 'tiktok_formal', label: '📋 Formal' },
+                  { id: 'minimal', label: '⚡ Direto' },
+                  { id: 'exact_plain', label: '📄 Sem Emojis' },
+                ].map(fmt => (
+                  <button
+                    key={fmt.id}
+                    type="button"
+                    onClick={() => onChange({ formatStyle: fmt.id as any })}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
+                      (job.formatStyle || 'clean_modern') === fmt.id
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700/50'
+                    }`}
+                  >
+                    {fmt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex-1 relative min-h-[320px] flex flex-col">
             {isProcessed ? (
-              <textarea
-                readOnly
-                value={formattedOutput}
-                className="w-full h-full min-h-[300px] bg-slate-950/90 border border-emerald-500/20 rounded-xl p-4 text-sm text-emerald-100 font-mono leading-relaxed resize-y focus:outline-none selection:bg-emerald-600 selection:text-white"
-              />
+              outputViewMode === 'clean_card' ? (
+                /* ============================================================ */
+                /* LEITURA CLEAN - CARD MODERNO, RESPONSIVO E AGRADÁVEL         */
+                /* ============================================================ */
+                <div className="flex-1 bg-slate-950/80 border border-emerald-500/20 rounded-xl p-4 sm:p-5 flex flex-col justify-between space-y-4 shadow-inner">
+                  {/* Cabeçalho da Vaga */}
+                  <div className="space-y-2 pb-3 border-b border-slate-800/90">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        {job.vacanciesCount || 'Vagas Abertas'}
+                      </span>
+                      {job.requirements && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                          👥 {job.requirements}
+                        </span>
+                      )}
+                      {(job.city || job.category) && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-950/50 text-cyan-300 border border-cyan-800/40">
+                          📍 {job.city || 'São Paulo'}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                      {job.role || 'Oportunidade de Freela'}
+                    </h2>
+                  </div>
+
+                  {/* 4 Blocos de Informação Essenciais */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* 1. Cachê & Pagamento */}
+                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                        <DollarSign className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Cachê / Diária</div>
+                        <div className="text-base font-black text-emerald-400 truncate">
+                          {job.paymentValue || 'A combinar'}
+                        </div>
+                        <div className="text-xs text-slate-400 truncate">
+                          💳 {job.paymentTerms || 'Pagamento padrão'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. Agenda & Horário */}
+                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                        <Calendar className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Data & Horário</div>
+                        <div className="text-sm font-bold text-white truncate">
+                          {job.dayOrDate || 'A definir'}
+                        </div>
+                        <div className="text-xs text-slate-400 truncate">
+                          ⏰ {job.schedule || 'Horário a combinar'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Localização */}
+                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Local do Evento</div>
+                        <div className="text-sm font-bold text-white truncate">
+                          {job.location || 'Local a confirmar'}
+                        </div>
+                        <div className="text-xs text-slate-400 truncate">
+                          {job.address || 'Endereço será informado'}
+                        </div>
+                        {(job.mapsUrl || job.address || job.location) && (
+                          <a
+                            href={job.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.address || job.location)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 hover:underline mt-1"
+                          >
+                            <Navigation className="w-3 h-3" /> Traçar Rota no Maps ↗
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 4. Benefícios */}
+                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Benefícios & Extras</div>
+                        <div className="text-sm font-bold text-slate-200">
+                          {job.benefits || 'Alimentação inclusa no local'}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          Incluso para o profissional
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Aviso & Regras (se houver) */}
+                  {job.observation && (
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="font-bold">Aviso importante:</strong> {job.observation}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Link Rastreável Ativo */}
+                  <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+                        <ExternalLink className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Link Inteligente WhatsApp</div>
+                        <div className="text-xs font-mono text-emerald-300 truncate">
+                          {trackingUrl}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                      <button
+                        type="button"
+                        onClick={handleCopyTrackingLink}
+                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedLink ? 'Copiado!' : 'Copiar Link'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={onSimulateClick}
+                        disabled={isSimulatingClick}
+                        className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs text-emerald-300 font-bold border border-emerald-500/40 flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Simular clique no rastreador"
+                      >
+                        <MousePointerClick className="w-3.5 h-3.5" />
+                        <span>{job.clicksCount || 0} cliques</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* ============================================================ */
+                /* TEXTO WHATSAPP MONOSPACE COM CÓPIA RÁPIDA                    */
+                /* ============================================================ */
+                <textarea
+                  readOnly
+                  value={formattedOutput}
+                  className="w-full flex-1 min-h-[300px] bg-slate-950/90 border border-emerald-500/20 rounded-xl p-4 text-sm text-emerald-100 font-mono leading-relaxed resize-y focus:outline-none selection:bg-emerald-600 selection:text-white"
+                />
+              )
             ) : (
-              <div className="w-full h-full min-h-[300px] bg-slate-950/60 border border-dashed border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+              <div className="w-full flex-1 min-h-[300px] bg-slate-950/60 border border-dashed border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
                 <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-3 shadow-inner">
                   <Sparkles className="w-7 h-7" />
                 </div>
@@ -715,7 +934,7 @@ Pagamento 3 dias úteis..."
                   Aguardando Processamento
                 </h4>
                 <p className="text-xs text-slate-400 max-w-sm mb-3">
-                  Cole a mensagem ou anexe o print no <strong>Campo 1</strong> e clique em <strong>"Processar com Gemini AI"</strong> para gerar a mensagem e o flyer.
+                  Cole a mensagem ou anexe o print no <strong>Campo 1</strong> e clique em <strong>"Processar com Gemini AI"</strong> para gerar a visualização clean e o flyer.
                 </p>
                 <div className="text-[11px] text-slate-500 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800">
                   ⚡ O FreelasHub organiza automaticamente horário, local, cachê e links
@@ -747,12 +966,12 @@ Pagamento 3 dias úteis..."
                   {copiedMessage ? (
                     <>
                       <Check className="w-5 h-5 text-white" />
-                      <span>Mensagem Copiada com Sucesso!</span>
+                      <span>Mensagem WhatsApp Copiada com Sucesso!</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-5 h-5" />
-                      <span>Copiar Mensagem Formatada</span>
+                      <span>Copiar Mensagem Formatada para WhatsApp</span>
                     </>
                   )}
                 </button>
@@ -778,7 +997,7 @@ Pagamento 3 dias úteis..."
 
             {isProcessed && (
               <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
-                <span>{formattedOutput.length} caracteres</span>
+                <span>{formattedOutput.length} caracteres no WhatsApp</span>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
@@ -804,16 +1023,19 @@ Pagamento 3 dias úteis..."
         onClose={() => setShowBannerModal(false)}
       />
 
-      {/* DETALHES ADICIONAIS / CAMPOS AVANÇADOS (OPCIONAL) */}
-      <div className="bg-slate-900/60 rounded-2xl border border-slate-800 overflow-hidden">
+      {/* DETALHES ADICIONAIS / CAMPOS AVANÇADOS ORGANIZADOS */}
+      <div className="bg-slate-900/60 rounded-2xl border border-slate-800 overflow-hidden shadow-lg">
         <button
           type="button"
           onClick={() => setShowAdvancedFields(!showAdvancedFields)}
-          className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-800/40 transition-colors cursor-pointer"
+          className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-slate-800/40 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-            <Layers className="w-4 h-4 text-cyan-400" />
-            <span>Ajustar Detalhes Individuais (Cargo, Horário, Cachê, Localização)</span>
+            <Layers className="w-4 h-4 text-emerald-400" />
+            <span>Editar e Ajustar Informações da Vaga</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+              Formulário Simplificado
+            </span>
           </div>
           {showAdvancedFields ? (
             <ChevronUp className="w-4 h-4 text-slate-400" />
@@ -823,157 +1045,270 @@ Pagamento 3 dias úteis..."
         </button>
 
         {showAdvancedFields && (
-          <div className="p-5 border-t border-slate-800 bg-slate-950/40 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Cargo / Função
-              </label>
-              <input
-                type="text"
-                value={job.role}
-                onChange={(e) => onChange({ role: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+          <div className="p-5 border-t border-slate-800 bg-slate-950/50 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              
+              {/* BLOCO 1: O TRABALHO & REMUNERAÇÃO */}
+              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 pb-2 border-b border-slate-800">
+                  <DollarSign className="w-4 h-4" />
+                  1. O Trabalho & Remuneração
+                </div>
 
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Data do Evento
-              </label>
-              <input
-                type="text"
-                value={job.dayOrDate}
-                onChange={(e) => onChange({ dayOrDate: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Horário
-              </label>
-              <input
-                type="text"
-                value={job.schedule}
-                onChange={(e) => onChange({ schedule: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Cachê / Diária
-              </label>
-              <input
-                type="text"
-                value={job.paymentValue}
-                onChange={(e) => onChange({ paymentValue: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Local / Estabelecimento
-              </label>
-              <input
-                type="text"
-                value={job.location}
-                onChange={(e) => onChange({ location: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Endereço Completo (Maps)
-              </label>
-              <input
-                type="text"
-                value={job.address || ''}
-                onChange={(e) => onChange({ address: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div className="sm:col-span-2 lg:col-span-3">
-              <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                Observações / Regras
-              </label>
-              <input
-                type="text"
-                value={job.observation || ''}
-                onChange={(e) => onChange({ observation: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            {/* Configurações Comunitárias Frila Hub */}
-            <div className="sm:col-span-2 lg:col-span-3 pt-3 border-t border-slate-800/80">
-              <div className="text-[11px] font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5" />
-                Dados para o Mural Comunitário Frila Hub (Renda Coletiva)
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">
-                    Quem está compartilhando (Seu Nome/Grupo)
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Cargo / Função Principal
                   </label>
                   <input
                     type="text"
-                    value={job.creatorName || ''}
-                    onChange={(e) => onChange({ creatorName: e.target.value })}
-                    placeholder="Ex: Carlos (Staff SP)"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    value={job.role}
+                    onChange={(e) => onChange({ role: e.target.value })}
+                    placeholder="Ex: Carregador"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                      Vagas Abertas
+                    </label>
+                    <input
+                      type="text"
+                      value={job.vacanciesCount || ''}
+                      onChange={(e) => onChange({ vacanciesCount: e.target.value })}
+                      placeholder="Ex: 70 vagas"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                      Perfil Aceito
+                    </label>
+                    <input
+                      type="text"
+                      value={job.requirements || ''}
+                      onChange={(e) => onChange({ requirements: e.target.value })}
+                      placeholder="Ex: Homens e Mulheres"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Cachê / Diária
+                  </label>
+                  <input
+                    type="text"
+                    value={job.paymentValue}
+                    onChange={(e) => onChange({ paymentValue: e.target.value })}
+                    placeholder="Ex: R$ 120,00"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-bold text-emerald-400 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">
-                    Cidade / Região
+                  <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                    Prazo de Pagamento
                   </label>
                   <input
                     type="text"
-                    value={job.city || ''}
-                    onChange={(e) => onChange({ city: e.target.value })}
-                    placeholder="Ex: São Paulo, SP"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    value={job.paymentTerms || ''}
+                    onChange={(e) => onChange({ paymentTerms: e.target.value })}
+                    placeholder="Ex: 3 dias úteis"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">
-                    Categoria da Oportunidade
+                  <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                    Benefícios & Extras
                   </label>
-                  <select
-                    value={job.category || 'eventos'}
-                    onChange={(e) => onChange({ category: e.target.value as any })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value="eventos">🎉 Eventos & Shows</option>
-                    <option value="logistica">📦 Carga & Logística</option>
-                    <option value="gastronomia">🍽️ Bar, Buffet & Garçom</option>
-                    <option value="promocao">📢 Promoção & Recepção</option>
-                    <option value="geral">⚙️ Serviços Gerais</option>
-                  </select>
+                  <input
+                    type="text"
+                    value={job.benefits || ''}
+                    onChange={(e) => onChange({ benefits: e.target.value })}
+                    placeholder="Ex: Alimentação no local"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
                 </div>
               </div>
 
-              <div className="mt-2.5 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="chk-public-hub"
-                  checked={job.isPublicHub !== false}
-                  onChange={(e) => onChange({ isPublicHub: e.target.checked })}
-                  className="w-3.5 h-3.5 text-emerald-500 rounded bg-slate-800 border-slate-700 cursor-pointer"
-                />
-                <label htmlFor="chk-public-hub" className="text-xs text-slate-300 cursor-pointer">
-                  Publicar esta oportunidade no <strong>Mural Colaborativo Frila Hub</strong> para outros freelancers acessarem
-                </label>
-              </div>
-            </div>
+              {/* BLOCO 2: DATA & LOCALIZAÇÃO */}
+              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                <div className="text-xs font-bold text-cyan-400 flex items-center gap-1.5 pb-2 border-b border-slate-800">
+                  <MapPin className="w-4 h-4" />
+                  2. Agenda & Localização
+                </div>
 
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Data do Evento
+                  </label>
+                  <input
+                    type="text"
+                    value={job.dayOrDate}
+                    onChange={(e) => onChange({ dayOrDate: e.target.value })}
+                    placeholder="Ex: Segunda-feira (31/08)"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Horário de Trabalho
+                  </label>
+                  <input
+                    type="text"
+                    value={job.schedule}
+                    onChange={(e) => onChange({ schedule: e.target.value })}
+                    placeholder="Ex: 08:00 às 20:00"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Local / Estabelecimento
+                  </label>
+                  <input
+                    type="text"
+                    value={job.location}
+                    onChange={(e) => onChange({ location: e.target.value })}
+                    placeholder="Ex: Sesc Casa Verde"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                    Endereço Completo (Para o Maps)
+                  </label>
+                  <input
+                    type="text"
+                    value={job.address || ''}
+                    onChange={(e) => onChange({ address: e.target.value })}
+                    placeholder="Ex: Av. Casa Verde, 327 - São Paulo, SP"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-medium text-slate-400 mb-1">
+                    Link Personalizado do Maps (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={job.mapsUrl || ''}
+                    onChange={(e) => onChange({ mapsUrl: e.target.value })}
+                    placeholder="https://maps.google.com/..."
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono text-[11px]"
+                  />
+                </div>
+              </div>
+
+              {/* BLOCO 3: CONTATO, REGRAS & MURAL */}
+              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 pb-2 border-b border-slate-800">
+                  <Phone className="w-4 h-4" />
+                  3. Contato, Regras & Mural
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    WhatsApp de Contato (DDD + Número)
+                  </label>
+                  <input
+                    type="text"
+                    value={job.contactPhone || ''}
+                    onChange={(e) => onChange({ contactPhone: e.target.value })}
+                    placeholder="Ex: 5511999998888"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                    Avisos / Regras do Evento
+                  </label>
+                  <input
+                    type="text"
+                    value={job.observation || ''}
+                    onChange={(e) => onChange({ observation: e.target.value })}
+                    placeholder="Ex: Proibido consumo de álcool no evento."
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                {/* Mural Colaborativo */}
+                <div className="pt-2 border-t border-slate-800/80 space-y-2">
+                  <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    Mural Colaborativo Frila Hub
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">
+                        Seu Nome / Grupo
+                      </label>
+                      <input
+                        type="text"
+                        value={job.creatorName || ''}
+                        onChange={(e) => onChange({ creatorName: e.target.value })}
+                        placeholder="Ex: Staff SP"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">
+                        Cidade / Região
+                      </label>
+                      <input
+                        type="text"
+                        value={job.city || ''}
+                        onChange={(e) => onChange({ city: e.target.value })}
+                        placeholder="Ex: São Paulo, SP"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] text-slate-400 mb-1">
+                      Categoria
+                    </label>
+                    <select
+                      value={job.category || 'eventos'}
+                      onChange={(e) => onChange({ category: e.target.value as any })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                    >
+                      <option value="eventos">🎉 Eventos & Shows</option>
+                      <option value="logistica">📦 Carga & Logística</option>
+                      <option value="gastronomia">🍽️ Bar, Buffet & Garçom</option>
+                      <option value="promocao">📢 Promoção & Recepção</option>
+                      <option value="geral">⚙️ Serviços Gerais</option>
+                    </select>
+                  </div>
+
+                  <div className="pt-1 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="chk-public-hub"
+                      checked={job.isPublicHub !== false}
+                      onChange={(e) => onChange({ isPublicHub: e.target.checked })}
+                      className="w-3.5 h-3.5 text-emerald-500 rounded bg-slate-800 border-slate-700 cursor-pointer"
+                    />
+                    <label htmlFor="chk-public-hub" className="text-[11px] text-slate-300 cursor-pointer">
+                      Compartilhar no <strong>Mural Comunitário</strong>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
           </div>
         )}
       </div>
